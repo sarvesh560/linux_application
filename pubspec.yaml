@@ -1,0 +1,26 @@
+name: pdf_knife_tool
+description: Desktop PDF utility
+publish_to: none
+
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.8.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  file_picker: ^10.3.10
+  pdfrx: ^2.4.1
+  syncfusion_flutter_pdf: ^30.2.7
+  reorderables: ^0.6.0
+  path_provider: ^2.1.5
+  window_manager: ^0.5.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true

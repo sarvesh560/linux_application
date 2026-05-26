@@ -1,0 +1,83 @@
+name: Build Linux AppImage
+
+on:
+push:
+branches:
+  - main
+
+jobs:
+build-linux:
+runs-on: ubuntu-22.04
+  
+  ```
+steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
+
+  - name: Setup Flutter
+    uses: subosito/flutter-action@v2
+    with:
+      channel: stable
+
+  - name: Install Linux dependencies
+    run: |
+      sudo apt update
+      sudo apt install -y \
+        clang \
+        cmake \
+        ninja-build \
+        pkg-config \
+        libgtk-3-dev \
+        liblzma-dev \
+        fuse \
+        libfuse2 \
+        file
+
+  - name: Enable Linux desktop
+    run: flutter config --enable-linux-desktop
+
+  - name: Install Flutter dependencies
+    run: flutter pub get
+
+  - name: Build Linux release
+    run: flutter build linux --release
+
+  - name: Download linuxdeploy
+    run: |
+      wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+      chmod +x linuxdeploy-x86_64.AppImage
+
+  - name: Create AppDir
+    run: |
+      mkdir -p AppDir/usr/bin
+      cp -r build/linux/x64/release/bundle/* AppDir/usr/bin/
+
+  - name: Create desktop entry
+    run: |
+      cat > AppDir/pdfknife.desktop <<EOF
+      [Desktop Entry]
+      Name=PDF Knife Tool
+      Exec=pdf_knife_tool
+      Icon=icon
+      Type=Application
+      Categories=Utility;
+      EOF
+
+  - name: Add icon
+    run: |
+      cp icon.png AppDir/icon.png
+
+  - name: Build AppImage
+    run: |
+      ./linuxdeploy-x86_64.AppImage \
+      --appdir AppDir \
+      -d AppDir/pdfknife.desktop \
+      -i AppDir/icon.png \
+      --output appimage
+
+  - name: Upload AppImage Artifact
+    uses: actions/upload-artifact@v4
+    with:
+      name: PDF_Knife_Tool_AppImage
+      path: ./*.AppImage
+

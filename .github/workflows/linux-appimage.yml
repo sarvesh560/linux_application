@@ -80,4 +80,3 @@ steps:
     with:
       name: PDF_Knife_Tool_AppImage
       path: ./*.AppImage
-
